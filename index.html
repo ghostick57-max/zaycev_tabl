@@ -36,6 +36,7 @@
   <!-- Стили -->
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/world.css" />
 </head>
 <body>
 
@@ -65,8 +66,13 @@
   <!-- ========================== Содержимое ========================== -->
   <main class="container">
 
+    <!-- Раздел 0. Карта мира методики -->
+    <section class="view active" id="view-world" aria-label="Карта мира методики">
+      <div class="view-root"></div>
+    </section>
+
     <!-- Раздел 1. Карта таблиц -->
-    <section class="view active" id="view-tables" aria-label="Карта таблиц">
+    <section class="view" id="view-tables" aria-label="Карта таблиц">
       <div class="view-root"></div>
     </section>
 
@@ -90,7 +96,10 @@
   <!-- ========================== Dock (низ) ========================== -->
   <div class="dock-wrap">
     <div class="dock" role="navigation" aria-label="Разделы тренажёра">
-      <button class="dock-btn active" type="button" data-nav="tables" title="Карта таблиц">
+      <button class="dock-btn active" type="button" data-nav="world" title="Карта мира методики">
+        <span aria-hidden="true">🌍</span><span class="dock-label">Мир</span>
+      </button>
+      <button class="dock-btn" type="button" data-nav="tables" title="Карта таблиц">
         <span aria-hidden="true">🗺️</span><span class="dock-label">Таблицы</span>
       </button>
       <button class="dock-btn" type="button" data-nav="cubes" title="Конструктор кубиков">
@@ -117,6 +126,7 @@
   <script src="js/data/colors.js"></script>
   <script src="js/data/cubes.js"></script>
   <script src="js/data/tables.js"></script>
+  <script src="js/data/world.js"></script>
   <script src="js/data/exercises.js"></script>
 
   <!-- Ядро -->
@@ -131,6 +141,7 @@
   <script src="js/features/cubeBuilder.js"></script>
   <script src="js/features/cube3d.js"></script>
   <script src="js/features/generator.js"></script>
+  <script src="js/features/worldMap.js"></script>
 
   <!-- Точка входа -->
   <script src="js/app.js"></script>

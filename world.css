@@ -1,0 +1,750 @@
+/* ==================================================================
+   КАРТА МИРА МЕТОДИКИ — панорамный игровой слой.
+   Стили изолированы префиксом .world- / .w- / .wp-.
+   ================================================================== */
+
+/* ------------------------------ Шапка ---------------------------- */
+.world-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.world-head-main { max-width: 730px; }
+.world-head-main p { color: var(--ink-soft); font-size: .93rem; }
+
+.world-stats { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; }
+.world-stat {
+  min-width: 66px;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+}
+.world-stat b { display: block; font-size: 1.1rem; line-height: 1.1; }
+.world-stat span {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-muted);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.world-progress {
+  min-width: 186px;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+}
+.wp-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-muted);
+  font-size: .76rem;
+  font-weight: 600;
+}
+.wp-line strong { color: var(--text-primary); }
+.wp-reset {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: .9rem;
+  line-height: 1;
+  padding: 2px 3px;
+  border-radius: 6px;
+}
+.wp-reset:hover { color: var(--accent); background: var(--accent-soft); }
+.wp-bar {
+  height: 4px;
+  margin-top: 7px;
+  border-radius: 999px;
+  background: var(--bg-gray);
+  overflow: hidden;
+}
+.wp-bar i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--c-green));
+  transition: width .3s ease;
+}
+
+/* ----------------------------- Панель управления ----------------- */
+.world-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 9px 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  z-index: 6;
+}
+.world-search { display: flex; align-items: center; gap: 6px; }
+.world-search input {
+  width: 104px;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-weight: 700;
+  text-align: center;
+}
+.world-search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.world-search-note {
+  max-width: 190px;
+  color: var(--ink-muted);
+  font-size: .72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.world-filters {
+  display: flex;
+  align-items: center;
+  gap: 7px 14px;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+.wfilter-group { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.wfilter-label {
+  margin-right: 2px;
+  color: var(--ink-muted);
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.wchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink-soft);
+  font-size: .74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .14s;
+}
+.wchip:hover { border-color: var(--accent); color: var(--accent); }
+.wchip.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.wchip-dot { width: 9px; height: 9px; border-radius: 3px; display: block; }
+.world-filter-reset { align-self: center; }
+.world-visible { margin-left: auto; color: var(--ink-muted); font-size: .76rem; white-space: nowrap; }
+.world-visible b { color: var(--text-primary); }
+
+/* ------------------------------- Карта --------------------------- */
+.world-shell {
+  --world-surface: var(--panel-2);
+  position: relative;
+  height: clamp(540px, 70vh, 790px);
+  border: 1px solid var(--border);
+  border-radius: var(--rad-panel);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background:
+    radial-gradient(900px 520px at 18% 12%, rgba(10, 132, 255, .13), transparent 66%),
+    radial-gradient(760px 520px at 84% 84%, rgba(56, 161, 105, .11), transparent 66%),
+    radial-gradient(600px 400px at 60% 20%, rgba(214, 158, 46, .07), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(127, 127, 127, .07) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(127, 127, 127, .07) 39px 40px),
+    var(--panel-2);
+}
+[data-theme="dark"] .world-shell {
+  --world-surface: #101013;
+  background:
+    radial-gradient(900px 520px at 18% 12%, rgba(10, 132, 255, .20), transparent 66%),
+    radial-gradient(760px 520px at 84% 84%, rgba(76, 217, 100, .12), transparent 66%),
+    radial-gradient(600px 400px at 60% 20%, rgba(255, 204, 0, .06), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(255, 255, 255, .045) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(255, 255, 255, .045) 39px 40px),
+    #101013;
+}
+.world-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, .10);
+}
+.world-stage { position: absolute; inset: 0; z-index: 1; }
+.world-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.world-svg.is-panning { cursor: grabbing; }
+
+/* --------------------------- Земли и рельеф ---------------------- */
+.w-land {
+  fill: color-mix(in srgb, var(--biome) 12%, transparent);
+  stroke: color-mix(in srgb, var(--biome) 55%, transparent);
+  stroke-width: 2;
+  transition: fill .2s ease, stroke .2s ease, stroke-width .2s ease;
+}
+.w-region { cursor: pointer; }
+.w-region:hover .w-land {
+  fill: color-mix(in srgb, var(--biome) 20%, transparent);
+  stroke-width: 2.6;
+}
+.w-region.is-active .w-land {
+  fill: color-mix(in srgb, var(--biome) 24%, transparent);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--biome) 55%, transparent));
+}
+.w-region.is-filtered { opacity: .32; }
+.w-contour {
+  fill: none;
+  stroke: color-mix(in srgb, var(--biome) 34%, transparent);
+  stroke-width: 1.1;
+  stroke-dasharray: 3 7;
+  opacity: .7;
+  pointer-events: none;
+}
+.w-contour-b { opacity: .32; }
+
+/* ----------------------------- Звёзды ---------------------------- */
+.world-stars circle { fill: var(--ink-muted); opacity: .22; }
+[data-theme="dark"] .world-stars circle { fill: #fff; opacity: .30; }
+
+/* ----------------------------- Маршруты -------------------------- */
+.w-route-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+  opacity: .05;
+}
+.w-route-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 55%, var(--ink-muted));
+  stroke-width: 1.7;
+  stroke-dasharray: 6 8;
+  opacity: .55;
+}
+.w-route.is-active .w-route-line {
+  stroke: var(--accent);
+  opacity: 1;
+  animation: wm-dash 12s linear infinite;
+}
+.w-route.is-active .w-route-glow { opacity: .16; }
+@keyframes wm-dash { to { stroke-dashoffset: -140; } }
+.w-route-label {
+  fill: var(--ink-muted);
+  font-size: calc(9px * var(--wm-inv, 1));
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--world-surface);
+  stroke-width: calc(2.2px * var(--wm-inv, 1));
+  stroke-linejoin: round;
+  opacity: .9;
+}
+
+/* ------------------------- Названия земель ----------------------- */
+.w-region-label { cursor: pointer; }
+.w-region-name {
+  fill: var(--text-primary);
+  font-size: calc(11.5px * var(--wm-inv, 1));
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--world-surface);
+  stroke-width: calc(2.4px * var(--wm-inv, 1));
+  stroke-linejoin: round;
+  transition: fill .15s;
+}
+.w-region-label:hover .w-region-name { fill: var(--biome); }
+.w-region-sub {
+  fill: var(--ink-muted);
+  font-size: calc(8.5px * var(--wm-inv, 1));
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--world-surface);
+  stroke-width: calc(2px * var(--wm-inv, 1));
+  stroke-linejoin: round;
+}
+.w-region-badge {
+  fill: var(--biome);
+  font-size: calc(8px * var(--wm-inv, 1));
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--world-surface);
+  stroke-width: calc(1.8px * var(--wm-inv, 1));
+  stroke-linejoin: round;
+}
+
+/* ------------------------------ Клетки --------------------------- */
+.w-node { cursor: pointer; outline: none; }
+.w-node-hit { fill: transparent; }
+.w-node-base {
+  fill: var(--bg-elevated);
+  stroke: var(--world-surface);
+  stroke-width: 1;
+}
+.w-node-seg, .w-node-base, .w-node-num, .w-visited-dot { pointer-events: none; }
+.w-node-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity .15s ease;
+  pointer-events: none;
+}
+.w-node:hover .w-node-ring { opacity: .45; }
+.w-node.is-selected .w-node-ring {
+  opacity: 1;
+  animation: wm-pulse 1.8s ease-in-out infinite;
+}
+.w-node.is-selected .w-node-base { stroke: var(--accent); stroke-width: 1.5; }
+@keyframes wm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+.w-node-num {
+  fill: var(--text-primary);
+  font-family: var(--mono);
+  font-size: calc(9.5px * var(--wm-inv, 1));
+  font-weight: 700;
+  text-anchor: middle;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.world-svg.w-labels .w-node-num { opacity: 1; }
+.w-node-word { font-family: var(--font); font-size: calc(9px * var(--wm-inv, 1)); letter-spacing: -.02em; }
+.w-visited-dot {
+  fill: var(--c-green);
+  stroke: var(--world-surface);
+  stroke-width: 1;
+  opacity: 0;
+}
+.w-node.is-visited .w-visited-dot { opacity: 1; }
+.w-node.is-dim { opacity: .10; }
+.w-node.is-dim.is-selected { opacity: .62; }
+
+/* На предельном отдалении оставляем только номера земель:
+   полные названия девяти островов уже не помещаются без наложений. */
+.world-svg.w-far .w-region-name,
+.world-svg.w-far .w-region-sub,
+.world-svg.w-far .w-route-label { opacity: 0; }
+
+/* ----------------------------- Миникарта ------------------------- */
+.world-minimap {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  width: 172px;
+  z-index: 8;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+}
+.world-minimap-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--bg-elevated) 60%, transparent);
+  cursor: crosshair;
+}
+.mm-land {
+  fill: color-mix(in srgb, var(--biome) 26%, transparent);
+  stroke: color-mix(in srgb, var(--biome) 65%, transparent);
+  stroke-width: 5;
+  stroke-opacity: .55;
+}
+.mm-view {
+  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-opacity: .9;
+}
+
+/* ------------------------------ Зум ------------------------------ */
+.world-zoom {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+}
+.world-zoom button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.world-zoom button:hover { background: var(--accent-soft); color: var(--accent); }
+.world-zoom button + button { border-top: 1px solid var(--border); }
+
+/* --------------------------- Подсказка --------------------------- */
+.world-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 6;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+  color: var(--ink-muted);
+  font-size: .72rem;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.world-hint i { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-muted); display: block; }
+.world-shell.has-panel .world-hint { opacity: 0; }
+
+/* ---------------------------- Тултип ----------------------------- */
+.world-tooltip {
+  position: absolute;
+  z-index: 20;
+  max-width: 310px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease;
+}
+.world-tooltip.show { opacity: 1; transform: none; }
+.wt-title { font-size: .84rem; font-weight: 800; }
+.wt-meta { margin: 2px 0 5px; color: var(--ink-muted); font-size: .71rem; }
+.wt-text { color: var(--ink-soft); font-family: var(--mono); font-size: .74rem; }
+
+/* -------------------------- Боковая панель ----------------------- */
+.world-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 15;
+  width: 372px;
+  max-width: calc(100% - 24px);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .24);
+  opacity: 0;
+  transform: translateX(20px);
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.world-shell.has-panel .world-panel { opacity: 1; transform: none; pointer-events: auto; }
+
+.world-panel-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+}
+.wp-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: .94rem;
+}
+.wp-badge.pronoun { background: var(--c-red); }
+.wp-head-text { min-width: 0; flex: 1; }
+.wp-title {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wp-sub {
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: .73rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.world-panel-close {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.world-panel-close:hover { color: var(--accent); }
+.world-panel-body { padding: 2px 14px 16px; }
+.world-panel-body > p.muted { font-size: .85rem; }
+.world-notes { margin: 8px 0; padding-left: 18px; color: var(--ink-soft); font-size: .82rem; }
+.world-notes li { margin: 3px 0; }
+
+.wp-facts { display: flex; gap: 6px; flex-wrap: wrap; margin: 11px 0; }
+.wp-fact {
+  flex: 1 1 62px;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-2);
+  text-align: center;
+}
+.wp-fact b { display: block; font-size: 1rem; }
+.wp-fact span {
+  display: block;
+  margin-top: 1px;
+  color: var(--ink-muted);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.wp-region-progress { margin: 12px 0; }
+.wp-section-title { margin: 16px 0 8px; }
+.wp-group-title {
+  margin: 8px 0 5px;
+  color: var(--ink-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.wp-cell-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.wp-cell {
+  position: relative;
+  width: 31px;
+  height: 31px;
+  border: 1px solid color-mix(in srgb, var(--c) 45%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: .72rem;
+  font-weight: 800;
+  transition: .12s;
+}
+.wp-cell:hover { border-color: var(--c); transform: translateY(-1px); }
+.wp-cell.is-selected { border-color: transparent; background: var(--c); color: #fff; }
+.wp-cell.is-visited::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--c-green);
+}
+
+.wp-actions { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 8px; }
+.wp-focus-btn { margin-top: 2px; }
+.wp-back { margin-top: 10px; }
+.wp-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  color: var(--ink-muted);
+  font-size: .77rem;
+}
+.wp-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-green); flex: 0 0 auto; }
+
+/* --------------------------- Местоимения ------------------------- */
+.wp-pronoun-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--c) 45%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+}
+.wp-pronoun-hero strong { color: var(--c); font-family: var(--mono); font-size: 1.5rem; }
+.wp-pronoun-hero span { color: var(--ink-muted); font-size: .8rem; }
+.wp-pronoun-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.wp-pronoun-pair {
+  flex: 1 1 88px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--c);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+.wp-pronoun-pair.is-current {
+  border-color: var(--c);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 20%, transparent);
+}
+.wp-pair-title {
+  display: block;
+  color: var(--ink-muted);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.wp-pronoun-cols { display: flex; flex-direction: column; gap: 8px; }
+.wp-pronoun-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--c);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+.wp-pronoun-col strong { color: var(--c); }
+.wp-pronoun-items { color: var(--ink-soft); font-family: var(--mono); font-size: .74rem; line-height: 1.55; }
+
+/* ------------------------------ Легенда -------------------------- */
+.world-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.world-legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.world-legend-title { color: var(--ink-soft); font-size: .79rem; font-weight: 700; }
+.world-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-soft);
+  font-size: .75rem;
+  font-weight: 600;
+}
+.world-legend-item i { width: 10px; height: 10px; border-radius: 3px; display: block; }
+.world-legend-note { max-width: 620px; margin: 0; }
+
+/* ------------------------------ Адаптив -------------------------- */
+@media (max-width: 980px) {
+  .world-head { align-items: flex-start; flex-direction: column; }
+  .world-panel { width: 344px; }
+  .world-minimap { width: 142px; }
+}
+
+@media (max-width: 720px) {
+  .world-head { gap: 10px; margin-bottom: 10px; }
+  .world-head-main p { display: none; }
+  .world-stat { min-width: 54px; padding: 6px 9px; }
+  .world-stat b { font-size: 1rem; }
+  .world-progress { flex: 1 1 150px; min-width: 150px; }
+  .world-toolbar { gap: 8px; padding: 8px 10px; }
+  .world-filters {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .wfilter-group { flex: 0 0 auto; flex-wrap: nowrap; }
+  .world-visible { margin-left: 0; }
+  .world-shell { height: 64vh; min-height: 440px; }
+  .world-panel {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-width: none;
+    max-height: 64%;
+    transform: translateY(20px);
+    border-radius: 16px;
+  }
+  .world-minimap, .world-hint { display: none; }
+  .world-zoom { top: 8px; left: 8px; }
+  .world-zoom button { width: 32px; height: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-svg *,
+  .world-panel,
+  .world-tooltip { transition: none !important; animation: none !important; }
+}
