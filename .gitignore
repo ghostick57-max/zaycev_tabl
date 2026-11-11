@@ -16,3 +16,15 @@ zaytsev_debug.log
 
 # Исходники скриптов (не нужны пользователям, только для сборки)
 launcher.py
+
+# Дубликаты в корне (основные файлы лежат в подпапках css/ и js/)
+app.js
+cube3d.js
+cubeBuilder.js
+generator.js
+tableMap.js
+wizard.js
+styles.css
+tokens.css
+three.min.js
+zaicev_n_a_angliiskii_yazyk_tablicy_komplekt_dlya_doma_grupp.pdf
