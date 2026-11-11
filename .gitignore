@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+build_temp/
+*.spec
+
+# Генераторы документации (уже не нужны после создания docx)
+generate_manual.py
+check_docx.py
+
+# Временные файлы сборки
+*.exe.manifest
+
+# Логи
+zaytsev_debug.log
+
+# Исходники скриптов (не нужны пользователям, только для сборки)
+launcher.py

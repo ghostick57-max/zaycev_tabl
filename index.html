@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Зайцев-Интерактив 2.0 — английский по таблицам Н.А. Зайцева</title>
+  <meta name="description" content="Интерактивный тренажёр английского языка по методике Н.А. Зайцева: цвет = член предложения. 3D-конструктор кубиков." />
+
+  <!-- Иконка (собранная из четырёх цветов методики) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='16' height='16' fill='%23E53E3E'/%3E%3Crect x='16' width='16' height='16' fill='%233182CE'/%3E%3Crect y='16' width='16' height='16' fill='%2338A169'/%3E%3Crect x='16' y='16' width='16' height='16' fill='%23FFCC00'/%3E%3C/svg%3E" />
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Загрузчик Three.js: CDN, при недоступности — локальная копия vendor/three.min.js -->
+  <script>
+    (function () {
+      var pending = [];
+      window.__threeReady = function (fn) { if (window.THREE) fn(); else pending.push(fn); };
+      var after = function () { while (pending.length) { var f = pending.shift(); try { f(); } catch (e) { /* ignore */ } } };
+      function load(src, onOk, onFail) {
+        var s = document.createElement("script");
+        s.src = src; s.async = true;
+        s.onload = function () { if (window.THREE) onOk(); else onFail(); };
+        s.onerror = onFail;
+        document.head.appendChild(s);
+      }
+      load("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", after, function () {
+        load("vendor/three.min.js", after, after);
+      });
+    })();
+  </script>
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ============================ Шапка ============================ -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="traffic-lights" aria-hidden="true">
+        <i class="tl-red"></i><i class="tl-yellow"></i><i class="tl-green"></i>
+      </span>
+
+      <div class="brand">
+        <span class="logo" aria-hidden="true"><span>З</span></span>
+        <span>
+          Зайцев-Интерактив
+          <small>Английский по таблицам Н.А. Зайцева · цвет = член предложения</small>
+        </span>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn small" type="button" id="speech-toggle" title="Включить или выключить озвучку">🔊 Озвучка вкл</button>
+        <button class="btn small ghost" type="button" id="legend-btn" title="Легенда цветов">Легенда</button>
+        <button class="btn small ghost" type="button" id="about-btn" title="О методике">О методике</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================== Содержимое ========================== -->
+  <main class="container">
+
+    <!-- Раздел 1. Карта таблиц -->
+    <section class="view active" id="view-tables" aria-label="Карта таблиц">
+      <div class="view-root"></div>
+    </section>
+
+    <!-- Раздел 2. Конструктор кубиков (3D) -->
+    <section class="view" id="view-cubes" aria-label="Конструктор кубиков">
+      <div class="view-root"></div>
+    </section>
+
+    <!-- Раздел 3. Мастер алгоритма -->
+    <section class="view" id="view-wizard" aria-label="Мастер алгоритма">
+      <div class="view-root"></div>
+    </section>
+
+    <!-- Раздел 4. Генератор упражнений -->
+    <section class="view" id="view-generator" aria-label="Генератор упражнений">
+      <div class="view-root"></div>
+    </section>
+
+  </main>
+
+  <!-- ========================== Dock (низ) ========================== -->
+  <div class="dock-wrap">
+    <div class="dock" role="navigation" aria-label="Разделы тренажёра">
+      <button class="dock-btn active" type="button" data-nav="tables" title="Карта таблиц">
+        <span aria-hidden="true">🗺️</span><span class="dock-label">Таблицы</span>
+      </button>
+      <button class="dock-btn" type="button" data-nav="cubes" title="Конструктор кубиков">
+        <span aria-hidden="true">🧊</span><span class="dock-label">Кубики</span>
+      </button>
+      <button class="dock-btn" type="button" data-nav="wizard" title="Мастер алгоритма">
+        <span aria-hidden="true">🧭</span><span class="dock-label">Мастер</span>
+      </button>
+      <button class="dock-btn" type="button" data-nav="generator" title="Генератор упражнений">
+        <span aria-hidden="true">✏️</span><span class="dock-label">Упражнения</span>
+      </button>
+      <span class="dock-sep"></span>
+      <button class="dock-btn theme-btn" type="button" id="theme-toggle" title="Светлая / тёмная тема">🌙</button>
+    </div>
+  </div>
+
+  <!-- ========================== Модальное окно ====================== -->
+  <div class="overlay" id="modal-overlay">
+    <div class="modal" id="modal-box" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <!-- ============================ Скрипты =========================== -->
+  <!-- Данные -->
+  <script src="js/data/colors.js"></script>
+  <script src="js/data/cubes.js"></script>
+  <script src="js/data/tables.js"></script>
+  <script src="js/data/exercises.js"></script>
+
+  <!-- Ядро -->
+  <script src="js/core/utils.js"></script>
+  <script src="js/core/state.js"></script>
+  <script src="js/core/speech.js"></script>
+  <script src="js/core/theme.js"></script>
+
+  <!-- Разделы -->
+  <script src="js/features/tableMap.js"></script>
+  <script src="js/features/wizard.js"></script>
+  <script src="js/features/cubeBuilder.js"></script>
+  <script src="js/features/cube3d.js"></script>
+  <script src="js/features/generator.js"></script>
+
+  <!-- Точка входа -->
+  <script src="js/app.js"></script>
+
+  <noscript>
+    <p style="padding:24px;text-align:center">Для работы тренажёра включите JavaScript в браузере.</p>
+  </noscript>
+</body>
+</html>
